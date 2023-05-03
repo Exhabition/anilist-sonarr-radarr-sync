@@ -1,0 +1,1 @@
+# anilist-sonarr-radarr-sync
