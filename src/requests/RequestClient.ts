@@ -68,7 +68,7 @@ export class RequestClient {
     }
 
     async addMedia(aniListId: number, title: Title) {
-        const externalIds = await client.getExternalIdsFromAniListId(aniListId);
+        const externalIds = await client.getExternalIdsFromAniListId(aniListId).catch(error => console.error(error.message));
         if (!externalIds) throw new Error("No External IDs found");
 
         const neededService = this.postPath === "/movie" ? "tmdbId" : "tvdbId";
@@ -82,19 +82,18 @@ export class RequestClient {
             rootFolderPath: this.rootFolderPath,
             monitored: true,
             addOptions: {
-                monitor: "all",
+                monitor: this.postPath === "/movie" ? "movieOnly" : "all",
             }
         }
         postOptions[neededService] = neededId;
 
-        const response = await this.client.post<AxiosResponse>(this.postPath, postOptions).catch(async error => {
-            const reason = error.response.data[0].errorCode;
-            await saveEntry(aniListId, false, reason === "SeriesExistsValidator" ? true : false);
+        await this.client.post<AxiosResponse>(this.postPath, postOptions).catch(async error => {
+            const reason = error.response?.data[0]?.errorCode;
+            if (reason === "SeriesExistsValidator" || reason === "MovieExistsValidator") return console.log("Already imported, ignoring");
 
             throw new Error(error);
         });
 
         await saveEntry(aniListId, false, true);
-        return response.data;
     }
 }

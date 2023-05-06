@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 interface Mappings {
     "livechart_id": number,
@@ -58,9 +58,8 @@ class AniListClient {
 
     async getExternalIdsFromAniListId(aniListId: number) {
         const mappings = await this.getAnimeMappings();
-        if (!mappings) return console.error("Failed to load mappings");
+        if (!mappings) throw new Error("Failed to load mappings");
 
-        console.log(aniListId)
         const match = mappings.find(info => info.anilist_id === aniListId);
         if (!match) throw new Error(`No Id's for ${aniListId}`)
 

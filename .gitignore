@@ -119,3 +119,5 @@ dist
 
 # yarn.lock is available
 package-lock.json
+
+database.sqlite
