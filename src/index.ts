@@ -1,6 +1,6 @@
-import { config } from "dotenv";
-config();
-
+import { config as dotenv } from "dotenv";
+dotenv();
+import config from "./config";
 import { SchedulerService } from "./helper/SchedulerService";
 import { Radarr } from "./requests/Radarr";
 import { Sonarr } from "./requests/Sonarr";
@@ -12,24 +12,23 @@ const monitoredLists = process.env.MONITORED_LISTS || ["CURRENT", "PLANING"];
 
 const RADARR_TYPES = ["MOVIE"];
 // Usually these will already be monitored with sonarr
-const IGNORED_TYPES = ["SPECIAL", "SHORT", "OVA"]
+const IGNORED_TYPES = config.anilist.ignore
 
 const sonarrInstance = new Sonarr({
     hostname,
     apiKey: process.env.SONARR_API_KEY,
-    languageProfileId: 5,
-    qualityProfileId: 6,
-    rootFolderPath: "/Media/Anime/Series"
+    qualityProfileId: config.sonarr.qualityProfile,
+    rootFolderPath: config.sonarr.rootFolder || "/Media/Anime/Series"
 });
 const radarrInstance = new Radarr({
     hostname,
     apiKey: process.env.RADARR_API_KEY,
-    languageProfileId: 0,
-    qualityProfileId: 7,
-    rootFolderPath: "/Media/Anime/Movies"
+    qualityProfileId: config.radarr.qualityProfile,
+    rootFolderPath: config.radarr.rootFolder || "/Media/Anime/Movies"
 });
 
 const scheduler = new SchedulerService(async () => {
+
     const isSonarrAlive = await sonarrInstance.healthCheck();
     if (isSonarrAlive) console.log("Sonarr is healthy");
 
@@ -38,7 +37,7 @@ const scheduler = new SchedulerService(async () => {
 
     await client.getAnimeMappings();
 
-    const anilists = await client.getUserLists(862658);
+    const anilists = await client.getUserLists(process.env.ANILIST_ID);
     for (const list of anilists) {
         if (list.status && monitoredLists.includes(list.status)) {
             console.log(`Importing: ${list.status} (${list.entries.length} entries)`)
@@ -68,7 +67,7 @@ const scheduler = new SchedulerService(async () => {
     const entries = await getEntries();
     console.log(`Successful: ${entries.filter(entry => entry.success).length}`);
     console.log(`Failed: ${entries.filter(entry => !entry.success).length}`);
-}, 1000 * 60);
+}, 1000 * 5);
 
 export function getExistingTitle(title: Title) {
     return title.english || title.romaji || title.native;

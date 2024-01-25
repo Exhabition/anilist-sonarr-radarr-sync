@@ -121,3 +121,7 @@ dist
 package-lock.json
 
 database.sqlite
+
+.idea/
+
+src/config.ts

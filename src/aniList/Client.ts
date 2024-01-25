@@ -66,7 +66,7 @@ class AniListClient {
         return match;
     }
 
-    async getUserLists(userId: number) {
+    async getUserLists(userId: number | string) {
         return axios.post<AnilistsResponse>("https://graphql.anilist.co", {
             query: `
             query {        
