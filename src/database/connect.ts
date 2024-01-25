@@ -1,5 +1,6 @@
 import sqlite3 from 'sqlite3'
 import { Database, open } from 'sqlite'
+import * as fs from "fs";
 
 let openConnection: Database<sqlite3.Database, sqlite3.Statement> | null = null;
 
@@ -11,6 +12,11 @@ export interface Row {
 
 export async function connect() {
     if (openConnection) return openConnection;
+
+    if(!fs.existsSync('tmp/database.sqlite')) {
+        fs.mkdirSync('tmp');
+        fs.writeFileSync('tmp/database.sqlite', '');
+    }
 
     openConnection = await open({
         filename: 'tmp/database.sqlite',

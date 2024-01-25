@@ -15,7 +15,7 @@ export interface RequestClientOptions {
     timeout?: number;
     rootFolderPath: string;
     qualityProfileId: number;
-    languageProfileId: number;
+    // outed : languageProfileId: number;
 }
 
 export class RequestClient {
@@ -36,13 +36,13 @@ export class RequestClient {
         const port = options.port;
 
         this.rootFolderPath = options.rootFolderPath;
-        this.languageProfileId = options.languageProfileId;
+        // outed : this.languageProfileId = options.languageProfileId;
         this.qualityProfileId = options.qualityProfileId;
         this.postPath = postPath;
 
         this.client = axios.create({
             baseURL: `${sslType}${hostname}:${port}${urlBase}/api/v3`,
-            
+
             timeout: options.timeout || 5000,
             headers: {
                 "X-Api-Key": options.apiKey,
@@ -59,9 +59,10 @@ export class RequestClient {
         return await this.client.get("/qualityprofile").then(res => res.data);
     }
 
-    async getLanguageProfiles() {
-        return await this.client.get("/languageprofile").then(res => res.data);
-    }
+    // OUTED :
+    // async getLanguageProfiles() {
+    //     return await this.client.get("/languageprofile").then(res => res.data);
+    // }
 
     async getRootFolders() {
         return await this.client.get("/rootfolder").then(res => res.data);
@@ -77,7 +78,7 @@ export class RequestClient {
 
         const postOptions: { [key: string]: any } = {
             title: getExistingTitle(title),
-            languageProfileId: this.languageProfileId,
+            // outed : languageProfileId: this.languageProfileId,
             qualityProfileId: this.qualityProfileId,
             rootFolderPath: this.rootFolderPath,
             monitored: true,

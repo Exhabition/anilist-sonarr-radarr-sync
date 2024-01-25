@@ -1,4 +1,4 @@
-import { Row, connect } from "../database/connect";
+import {connect, Row} from "../database/connect";
 
 export async function saveEntry(mediaId: number, exclude: boolean, success: boolean) {
     const database = await connect();
@@ -7,14 +7,10 @@ export async function saveEntry(mediaId: number, exclude: boolean, success: bool
 
 export async function getEntry(id: number) {
     const database = await connect();
-    const result = await database.get<Row>("SELECT * FROM media WHERE id = ?", id);
-
-    return result;
+    return await database.get<Row>("SELECT * FROM media WHERE id = ?", id);
 }
 
 export async function getEntries() {
     const database = await connect();
-    const rows = await database.all<Row[]>("SELECT * FROM media");
-
-    return rows;
+    return await database.all<Row[]>("SELECT * FROM media");
 }
